@@ -16,5 +16,18 @@ network_wait() ->
         { request, RequestId } ->
             io:format("request: ~p~n", [RequestId] )
     end.
-
-
+%% start a server to receive pv
+%% while true 
+%%   receive a pv
+%%   send pv to inner network
+%% end
+%% 
+%% receive a inner campain result
+%% success: make a response
+%% failure: 
+%%     while retrieve all linked network
+%%          create a process to send a request for campaign
+%% 
+%% receive a linked network campaign( timer todo )
+%%     bidding
+%%     make a response
