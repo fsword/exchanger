@@ -1,0 +1,2 @@
+-module(inner_bid).
+

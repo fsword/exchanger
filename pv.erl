@@ -1,21 +1,36 @@
 -module(pv).
--export([start/0,  inner_network/0]).
+-export([serv/0,wait/0]).
 
-start() -> register(serv, spawn(fun() -> inner_network(), wait() end)).
-inner_network() -> register(network1, spawn(fun() -> network_wait() end)).
+start() -> spawn(fun() -> serv() end).
 
-wait() ->
+serv() ->
     receive
-        { _, RequestId, _ } ->
-            network1 ! { request, RequestId },
-            wait()
+        { RequestPid, RequestId, Catalog } ->
+            spawn(fun() -> pv_process(RequestPid,RequestId,Catalog) end),
+            serv().
     end.
            
-network_wait() ->
-    receive
-        { request, RequestId } ->
-            io:format("request: ~p~n", [RequestId] )
-    end.
+           
+pv_process(RequestPid, RequestId,Catalog) -> 
+    ResponseAd = inner_network(RequestId,Catalog),
+    Ad = exchange_ad(ResponseAd, RequestId,Catalog),
+    RequestPid ! Ad
+
+
+inner_network(RequestId,"S") ->
+    {ad,"Sport"};
+inner_network(RequestId,"R") ->
+    {ad,"Reading"};
+inner_network(Request,_) -> null.
+    
+exchange_ad(null,RequestId,"S") ->
+    {ad,"network Sport"};
+exchange_ad(null,RequestId,"R") ->
+    {ad,"network Reading"};
+exchange_ad(null,RequestId,"R") ->
+    {ad,"network others"}.
+    
+
 %% start a server to receive pv
 %% while true 
 %%   receive a pv
