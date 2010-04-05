@@ -16,6 +16,6 @@ campaign(ACookie,EnvTags,AdZoneTags) ->
             {script,disp({ACookie,EnvTags,AdZoneTags})}
     end.
 
-disp({ACookie,EnvTags,AdZoneTags}) ->
+disp({ACookie,_EnvTags,_AdZoneTags}) ->
     string:concat("exchange script for:",ACookie).
 
