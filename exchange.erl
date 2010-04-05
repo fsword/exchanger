@@ -1,32 +1,21 @@
 -module(exchange).
--export([each_pv/3]).
+-export([each_pv/4]).
 
-each_pv(none, RequestId,Catalog) -> 
-    {_, Msg} = disp(
-        campaign(RequestId,Catalog),
-        RequestId,
-        Catalog
-    ),
-    io:format("request: ~p~n", [Msg] );
-each_pv(Pid, RequestId,Catalog) -> 
-    Pid ! disp(
-        campaign(RequestId,Catalog),
-        RequestId,
-        Catalog
-    ).
+each_pv(none, ACookie, EnvTags, AdZoneTags) -> 
+    {script, Scripts} = campaign(ACookie,EnvTags,AdZoneTags),
+    io:format("response: ~p~n", [binary_to_term(Scripts)] );
+each_pv(Pid, ACookie, EnvTags, AdZoneTags) -> 
+    Pid ! campaign(ACookie,EnvTags,AdZoneTags).
 
-campaign(RequestId,"S") ->
-    {ad,string:concat("Sport:",RequestId)};
-campaign(RequestId,"R") ->
-    {ad,string:concat("Reading:",RequestId)};
-campaign(_,_) -> null.
+campaign(ACookie,EnvTags,AdZoneTags) ->
+    Support = lists:member("Sport",EnvTags) or lists:member("Sport",AdZoneTags),
+    if
+        Support ->
+            {script,string:concat("Sport:",ACookie)};
+        true -> 
+            {script,disp({ACookie,EnvTags,AdZoneTags})}
+    end.
 
-disp(null,RequestId,"S") ->
-    {ad,string:concat("network Sport:",RequestId)};
-disp(null,RequestId,"R") ->
-    {ad,string:concat("network Reading:",RequestId)};
-disp(null,RequestId,_) ->
-    {ad,string:concat("network others:",RequestId)};
-disp(Ad,_,_) -> Ad.
-
+disp({ACookie,EnvTags,AdZoneTags}) ->
+    string:concat("exchange script for:",ACookie).
 

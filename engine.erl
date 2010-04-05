@@ -1,22 +1,29 @@
 -module(engine).
--export([start/0,start/1,each_pv/3]).
+-export([start/0,each_pv/4,test/0]).
 
 start() -> spawn(fun() -> serv(engine) end).
 
-start(Name) -> register(Name,spawn(fun() -> serv(engine) end)).
+%%start(Name) -> register(Name,spawn(fun() -> serv(engine) end)).
 
 serv(Mod) ->
     receive
         { update, NewMod} ->
             io:format("module updated: ~p~n", [NewMod] ),
             serv(NewMod);
-        { Pid, RequestId, Catalog } ->
-            spawn(Mod,each_pv,[Pid,RequestId,Catalog]),
+        { Pid, ACookie, EnvTags, AdZoneTags } ->
+            spawn(Mod,each_pv,[Pid,ACookie,EnvTags, AdZoneTags]),
             serv(Mod)
     end.
 
-each_pv(Pid, RequestId,Catalog) -> 
-    io:format("request: Pid = ~p, RequestId = ~p, Catalog = ~p.~n", [Pid,RequestId,Catalog] ).
+each_pv(Pid, ACookie, EnvTags, AdZoneTags) -> 
+    io:format("request: Pid = ~p, ACookie = ~p, EnvTags = ~p, AdZoneTags =~p.~n", [Pid,ACookie,EnvTags,AdZoneTags] ).
+
+test() ->
+    X = engine:start(),
+    X ! { update, exchange },
+    X ! { none, '121383931', ["Sport",fds,f,dsfsd,fsdaf,sa],['adsa',cosls] },
+    X ! { none, '121383931', ['Spor',fds,f,dsfsd,fsdaf,sa],['adsa',cosls] },
+    X.
 
 %% start a server to receive pv
 %% while true 
