@@ -5,3 +5,4 @@ go:compile
 clean:
 	rm -rf *.beam
 	rm -rf erl_crash.dump
+

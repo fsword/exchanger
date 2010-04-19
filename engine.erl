@@ -3,11 +3,9 @@
 
 start() -> spawn(fun() -> serv(engine) end).
 
-%%start(Name) -> register(Name,spawn(fun() -> serv(engine) end)).
-
 serv(Mod) ->
     receive
-        { update, NewMod} ->
+        { update, NewMod } ->
             io:format("module updated: ~p~n", [NewMod] ),
             serv(NewMod);
         { Pid, ACookie, EnvTags, AdZoneTags } ->
@@ -22,7 +20,7 @@ test() ->
     X = engine:start(),
     X ! { update, exchange },
     X ! { none, '121383931', ["Sport",fds,f,dsfsd,fsdaf,sa],['adsa',cosls] },
-    X ! { none, '121383931', ['Spor',fds,f,dsfsd,fsdaf,sa],['adsa',cosls] },
+    X ! { none, '121383931', ["Sport",fds,f,dsf,fsdaf,sa],['adsa',cosls] },
     X.
 
 %% start a server to receive pv
